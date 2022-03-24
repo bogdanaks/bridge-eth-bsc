@@ -20,5 +20,7 @@ module.exports = {
       "error",
       { ignores: ["modules"] },
     ],
+    camelcase: "off",
+    "promise/param-names": "off",
   },
 };
