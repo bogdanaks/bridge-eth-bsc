@@ -2,9 +2,11 @@ import { parseEther } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 import swapTest from "./swap";
 import redeemTest from "./redeem";
+import errorsTest from "./errorsTest";
+import tokenUtils from "./tokenUtils";
 
 describe("Test functions", async function () {
-  before(async function () {
+  beforeEach(async function () {
     this.BridgeContract = await ethers.getContractFactory("Bridge");
     this.TokenContract = await ethers.getContractFactory("Token");
     [this.owner, this.addr1, this.addr2, this.validator] =
@@ -31,4 +33,6 @@ describe("Test functions", async function () {
 
   swapTest();
   redeemTest();
+  errorsTest();
+  tokenUtils();
 });
