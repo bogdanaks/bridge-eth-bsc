@@ -11,11 +11,9 @@ contract Bridge {
   address public owner;
   address public validator;
 
-  enum Step { PENDING, SWAPPED, REDEEMED }
-
   mapping (uint64 => bool) public chainList;
   mapping(string => address) public tokenList;
-  mapping(bytes32 => Step) public processedSwaps;
+  mapping(bytes32 => bool) public processedSwaps;
 
   constructor(address _validatorAddress) {
     owner = msg.sender;
@@ -47,12 +45,13 @@ contract Bridge {
       )
     );
 
-    require(processedSwaps[hashArgs] != Step.SWAPPED, "Already processing");
+    require(!processedSwaps[hashArgs], "Already processing");
 
     address tokenAddress = tokenList[_tokenSymbol];
     require(tokenAddress != address(0), "Token does not exist");
 
     IToken(tokenAddress).burn(msg.sender, _amount);
+    processedSwaps[hashArgs] = true;
     emit SwapInitialized(
       msg.sender,
       _recipient,
@@ -77,11 +76,11 @@ contract Bridge {
     require(_chainTo != _chainFrom, "Identical networks");
     bytes32 hashArgs = keccak256(abi.encodePacked(_recipient, _amount, _chainTo, _chainFrom, _nonce, _tokenSymbol)).toEthSignedMessageHash();
 
-    require(processedSwaps[hashArgs] == Step.PENDING, "Already processing");
+    require(!processedSwaps[hashArgs], "Already processing");
     address validatorAddress = hashArgs.recover(_signature);
     require(validatorAddress == validator, "Validator address is not correct");
 
-    processedSwaps[hashArgs] == Step.REDEEMED;
+    processedSwaps[hashArgs] = true;
 
     address tokenAddress = tokenList[_tokenSymbol];
     require(tokenAddress != address(0), "Token does not exist");
@@ -102,18 +101,14 @@ contract Bridge {
 
   function updateChainById(uint64 _chainId, bool _status) public onlyOwner {
     chainList[_chainId] = _status;
-    // TODO add event
   }
 
   function includeToken(string memory _tokenSymbol, address _tokenAddress) public onlyOwner {
     tokenList[_tokenSymbol] = _tokenAddress;
-    // TODO add event
   }
 
   function excludeToken(string memory _tokenSymbol) public onlyOwner {
     delete tokenList[_tokenSymbol];
-    // tokensList[_tokenSymbol] = address(0x0);
-    // TODO add event
   }
 
   event SwapInitialized(
