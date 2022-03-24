@@ -12,5 +12,6 @@ declare module "mocha" {
     owner: SignerWithAddress;
     addr1: SignerWithAddress;
     addr2: SignerWithAddress;
+    validator: SignerWithAddress;
   }
 }
