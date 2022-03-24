@@ -2,14 +2,14 @@
 pragma solidity ^0.8.11;
 
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "hardhat/console.sol";
 import "./IToken.sol";
 
 contract Bridge {
   using ECDSA for bytes32;
 
   address public owner;
-  // uint256 public nonce;
-  // mapping(uint256 => bool) public nonces; // TODO add it 
+  address public validator;
 
   enum Step { PENDING, SWAPPED, REDEEMED }
 
@@ -17,8 +17,9 @@ contract Bridge {
   mapping(string => address) public tokenList;
   mapping(bytes32 => Step) public processedSwaps;
 
-  constructor() {
+  constructor(address _validatorAddress) {
     owner = msg.sender;
+    validator = _validatorAddress;
   }
 
   modifier onlyOwner() {
@@ -74,12 +75,11 @@ contract Bridge {
     bytes calldata _signature
   ) external {
     require(_chainTo != _chainFrom, "Identical networks");
-    bytes32 hashArgs = keccak256(abi.encodePacked(_recipient, _amount, _chainFrom, _chainTo, _nonce, _tokenSymbol)).toEthSignedMessageHash();
+    bytes32 hashArgs = keccak256(abi.encodePacked(_recipient, _amount, _chainTo, _chainFrom, _nonce, _tokenSymbol)).toEthSignedMessageHash();
 
     require(processedSwaps[hashArgs] == Step.PENDING, "Already processing");
-
     address validatorAddress = hashArgs.recover(_signature);
-    require(validatorAddress == msg.sender, "Validator address is not correct");
+    require(validatorAddress == validator, "Validator address is not correct");
 
     processedSwaps[hashArgs] == Step.REDEEMED;
 
