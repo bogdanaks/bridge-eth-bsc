@@ -7,10 +7,11 @@ describe("Test functions", async function () {
   before(async function () {
     this.BridgeContract = await ethers.getContractFactory("Bridge");
     this.TokenContract = await ethers.getContractFactory("Token");
-    [this.owner, this.addr1, this.addr2] = await ethers.getSigners();
+    [this.owner, this.addr1, this.addr2, this.validator] =
+      await ethers.getSigners();
 
-    this.bridgeEth = await this.BridgeContract.deploy();
-    this.bridgeBsc = await this.BridgeContract.deploy();
+    this.bridgeEth = await this.BridgeContract.deploy(this.validator.address);
+    this.bridgeBsc = await this.BridgeContract.deploy(this.validator.address);
     this.tokenEth = await this.TokenContract.deploy("Crypton ETH", "CRYP");
     this.tokenBsc = await this.TokenContract.deploy("Crypton BSC", "CRYP");
 

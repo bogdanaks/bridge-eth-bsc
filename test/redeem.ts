@@ -22,10 +22,28 @@ export default function (): void {
       [this.addr2.address, parseEther("100"), 56, 1, 0, "CRYP"]
     );
 
-    const signature = await this.owner.signMessage(
+    const signature = await this.validator.signMessage(
       ethers.utils.arrayify(hashMsh)
     );
 
-    expect(await this.tokenBsc.balanceOf(this.addr1.address)).to.be.equal(0);
+    expect(await this.tokenBsc.balanceOf(this.addr2.address)).to.be.equal(0);
+
+    expect(
+      await this.bridgeBsc.redeem(
+        this.addr2.address,
+        parseEther("100"),
+        56,
+        1,
+        0,
+        "CRYP",
+        signature
+      )
+    )
+      .to.emit(this.bridgeBsc, "SwapRedeemed")
+      .withArgs(this.addr2.address, parseEther("100"), 56, 1, 0, "CRYP");
+
+    expect(await this.tokenBsc.balanceOf(this.addr2.address)).to.be.equal(
+      parseEther("100")
+    );
   });
 }
