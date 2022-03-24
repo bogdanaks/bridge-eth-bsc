@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const Contract = await ethers.getContractFactory("NFT");
-  const contract = await Contract.deploy();
+  const Contract = await ethers.getContractFactory("Token");
+  const contract = await Contract.deploy("Crypton", "CRYP");
   const [owner] = await ethers.getSigners();
 
   console.log("Contract deployed to:", contract.address);
