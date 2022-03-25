@@ -27,7 +27,7 @@ task("swap", "Swap token")
     const Bridge = await hre.ethers.getContractAt("Bridge", args.contract);
     const [owner] = await hre.ethers.getSigners();
 
-    const tx = await Bridge.swap(
+    const tx = await Bridge.connect(owner).swap(
       args.recipient,
       args.amount,
       args.chainfrom,
@@ -37,9 +37,10 @@ task("swap", "Swap token")
     );
     await tx.wait();
 
-    const provider = new hre.ethers.providers.WebSocketProvider(
+    const providerBsc = new hre.ethers.providers.WebSocketProvider(
       "https://data-seed-prebsc-1-s1.binance.org:8545"
     );
+
     const filter = Bridge.filters.SwapInitialized(
       args.recipient,
       null,
@@ -48,7 +49,7 @@ task("swap", "Swap token")
       null,
       null
     );
-    provider.on(filter, (event) =>
+    providerBsc.on(filter, (event) =>
       console.log("SwapInitialized event:", event)
     );
 
