@@ -9,6 +9,8 @@ import "solidity-coverage";
 
 import "./tasks/includeToken";
 import "./tasks/swap";
+import "./tasks/grantRole";
+import "./tasks/mint";
 
 dotenv.config();
 
