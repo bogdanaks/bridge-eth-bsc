@@ -1,8 +1,11 @@
 # Advanced Sample Hardhat Project
 
 Contract bridge deployed to: 0xEFe8Be18aC3Cb5b539d40d6dE830004C27A6603A
+
 Successfully verified contract Bridge on Etherscan.
+
 https://rinkeby.etherscan.io/address/0xEFe8Be18aC3Cb5b539d40d6dE830004C27A6603A#code
+
 Owner address is: 0x0d637904305685c537494b96E74a0C0a4D1C647f
 
 Try running some of the following tasks:
